@@ -6,7 +6,7 @@ from .serializer import StudentSerializer
 from rest_framework.renderers import JSONRenderer
 from django.http import HttpResponse , JsonResponse
 from .models import Student
-
+# muneeb
 # Create your views here.
 # ye function base view he
 
