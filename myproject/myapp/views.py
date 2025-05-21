@@ -1,7 +1,8 @@
 
 # Create your views here.
 from django.shortcuts import render,HttpResponse
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view,permission_classes
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import viewsets
 from .models import *
@@ -9,7 +10,6 @@ from .serializer import *
 from django.contrib.auth.models import User                 # ye jo admin pe user he vo import kiya he
 from django.contrib.auth import authenticate,login,logout   # ye function user ko authenticate karne ke liye aur login or logout karne ke liye hota he
 from rest_framework_simplejwt.tokens import RefreshToken    # isme ek access token attribute hota he jo tab generate hota he jab bhi login karte he
-
 
 
 def home(request):
@@ -91,6 +91,7 @@ def lesson_view(request,id=None):
 
 
 @api_view(['GET','POST','PUT','PATCH','DELETE',"OPTIONS"])
+@permission_classes([IsAuthenticated])                               # ye decorator isliye likha he isko secure karne ke liye taki jab access token de tabhi chale
 def department_view(request,id=None):
     if(request.method == "GET"):
         department=Department.objects.all() 
@@ -242,7 +243,7 @@ def jwt_login_user(request):
         refresh = RefreshToken.for_user(user)                    # ye user ke liye token generate karta he 
         return Response({
             'message':'login successfully',
-            'access':str(refresh.access_token),                  # isme jo access token generate hua he vo ajata he
+            'access':str(refresh.access_token),                  # isme jo access token generate hua he vo ajata he aur ye har thodi derme expire hojati he
             'refresh':str(refresh)                               # isme pura refresh object ajata he
             })
     return Response({'message':'invalid credential'})
@@ -261,6 +262,10 @@ def jwt_logout_user(request):
 
 
  
+
+
+
+
 
 class SingerViewSet(viewsets.ModelViewSet):
     queryset=Singer.objects.all()
