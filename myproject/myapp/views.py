@@ -158,13 +158,20 @@ def employee_view(request,id=None):
 def register_view(request):                                     # ye tabhi chalega jab request method post hoga
     usernam= request.data.get('usernam')                        # signup jab is path pe jate he usme jo content me jo likha hota he data me vo ata he 
     passwrd= request.data.get('passwrd')
-
+    email= request.data.get('email')
+    print(usernam,passwrd,email)
     if User.objects.filter(username=usernam).exists():          # is User me jitne bhi user bane hote he vo sab user ke object (data) ajate he matlab ke ye jo User he ye database hi he jese Course model database he jisme sare object (data) hote he
        return Response({'message':'username already exists'})   # exists method tab true return karta he jab isme kuch hota he
 
     else:
-       User.objects.create_user(username=usernam, password=passwrd)   # isse create hoke save bhi ho jata he database me
-       return Response({'message':'user registered successfully'})
+       user=User.objects.create_user(username=usernam, password=passwrd, email=email)   # isse create hoke save bhi ho jata he database me
+       refresh = RefreshToken.for_user(user)                   # ye user ke liye token generate karta he 
+       return Response({
+            'message':'user registered successfully',
+            'access':str(refresh.access_token),                  # isme jo access token generate hua he vo ajata he aur ye har thodi derme expire hojati he
+            'refresh':str(refresh)                               # isme pura refresh object ajata he
+  
+            })
 
 
 @api_view(['POST'])
@@ -234,20 +241,25 @@ def User_database(request,username=None):
 
 @api_view(['POST'])
 def jwt_login_user(request):
-    user=request.data.get('user')
-    pswd=request.data.get('pswd')
+    username = request.data.get('user')
+    pswd = request.data.get('pswd')
+    emal = request.data.get('emal')
 
-    user = authenticate(username=user,password=pswd)             # ye authenticate function ye User se connected he ye kya karta he ki agar username aur password mil jata he to ye vo object return kar deta he fir us object ke sath kuch bhi kar sakte he
+    user = authenticate(username=username, password=pswd)                         # ye authenticate function ye User se connected he ye kya karta he ki agar username aur password mil jata he to ye vo object return kar deta he fir us object ke sath kuch bhi kar sakte he
 
-    if user is not None:
-        refresh = RefreshToken.for_user(user)                    # ye user ke liye token generate karta he 
+    if user is not None and user.email == emal:
+        refresh = RefreshToken.for_user(user)                                     # ye user ke liye token generate karta he
         return Response({
-            'message':'login successfully',
-            'access':str(refresh.access_token),                  # isme jo access token generate hua he vo ajata he aur ye har thodi derme expire hojati he
-            'refresh':str(refresh)                               # isme pura refresh object ajata he
-            })
-    return Response({'message':'invalid credential'})
-   
+            'message': 'login successfully', 
+            'access': str(refresh.access_token),                                  # isme jo access token generate hua he vo ajata he aur ye har thodi derme expire hojati he
+            'refresh': str(refresh)
+        })
+    elif user is not None:
+        return Response({'message': 'email does not match'})
+    else:
+        return Response({'message': 'invalid credentials'})
+
+
 
 @api_view(['POST'])
 def jwt_logout_user(request):

@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-n^*_x)5c^$@tg$20#lr82d46&i(kgh*47=x!5)4d_ik=!ep&ko
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',                  
     'myapp',
+    "corsheaders",
     'rest_framework_simplejwt.token_blacklist',      # this is for refresh logout
 ]
 
@@ -49,6 +50,7 @@ REST_FRAMEWORK={
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+     'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -132,3 +134,12 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+# additional add for connect react to django
+
+CORS_ORIGIN_ALLOW_ALL = False  # Or True if you want to allow all origins
+CORS_ALLOW_CREDENTIALS = True
+    # You can also allow specific origins
+CORS_ALLOWED_ORIGINS = ["http://localhost:5173" ]
+  

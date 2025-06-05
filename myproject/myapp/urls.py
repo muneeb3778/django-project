@@ -13,7 +13,7 @@ urlpatterns = [
     path('department/<int:id>/',department_view),    
     path('employee/',employee_view),
     path('employee/<int:id>/',employee_view),
-    path('signup',register_view,),
+    path('signup/',register_view,),
     path('login',login_user),
     path('logout',logout_user),
     path('user/',User_database),
@@ -23,6 +23,9 @@ urlpatterns = [
 
 ]
  
+
+
+
 
 # {
 #   "message": "login successfully",
