@@ -79,4 +79,4 @@ def stundent_api(request):
         return JsonResponse(res,safe=False)                                         # agar upar ki 2 line nahi likhna chate to ye likhenge
 
 
-
+# sssdsdx
